@@ -31,5 +31,5 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          scp -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/sidekick-api.jar "${REMOTE_USER}@${SERVER_IP}:${APP_DIR}/"
-          ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${REMOTE_USER}@${SERVER_IP}" "sudo systemctl restart sidekick-api.service"
+          scp -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/sidekick-api.jar "${REMOTE_USER}@${SERVER_IP}:${APP_DIR}/"
+          ssh -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${REMOTE_USER}@${SERVER_IP}" "sudo systemctl restart sidekick-api.service"
