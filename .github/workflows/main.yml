@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -25,11 +28,12 @@ jobs:
       - name: Deploy to Ubuntu server
         env:
           PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+          PASSPHRASE: ${{ secrets.DEPLOY_KEY_PASSPHRASE }}
           SERVER_IP: 134.209.216.201
           APP_DIR: /opt/sidekick-api
           REMOTE_USER: root
         run: |
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          scp -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/sidekick-api.jar "${REMOTE_USER}@${SERVER_IP}:${APP_DIR}/"
-          ssh -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${REMOTE_USER}@${SERVER_IP}" "sudo systemctl restart sidekick-api.service"
+          sshpass -P "$PASSPHRASE" scp -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/sidekick-api.jar "${REMOTE_USER}@${SERVER_IP}:${APP_DIR}/"
+          sshpass -P "$PASSPHRASE" ssh -v -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${REMOTE_USER}@${SERVER_IP}" "sudo systemctl restart sidekick-api.service"
